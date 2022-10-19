@@ -74,6 +74,7 @@ public class Server {
                     buffer.get(b);
                     fileName = new String(b);
                     file = new File(fileName);
+                    serveChannel.read(buffer);
                     if (!file.exists() || file.isDirectory()) {
                         sendReplyCode(serveChannel, 'N');
                     }else{
