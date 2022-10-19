@@ -1,8 +1,7 @@
 package Project_Part3;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -24,7 +23,7 @@ public class Client {
 
         do{
             Scanner keyboard = new Scanner(System.in);
-            System.out.println("Enter a command (D, G, L, R, U, or Q):");
+            System.out.println("Enter a command (D, U, L, R, U, or Q):");
             //Commands are NOT case-sensitive.
             command = keyboard.nextLine().toUpperCase().charAt(0);
 
@@ -66,6 +65,24 @@ public class Client {
                     }
                     channel.close();
                     break;
+                case 'U':
+                    File file = new File("C://Program Files//");
+                    Desktop.getDesktop().open(file);
+
+                    channel = SocketChannel.open();
+
+                    if (!file.exists() || file.isDirectory()) {
+                        System.out.println("That file cannot be uploaded");
+                        break;
+                    }
+
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        //write contents of file to client
+                        line = line+"\n";
+                        channel.write(ByteBuffer.wrap(line.getBytes()));
+                    }
             }
         }while(command != 'Q');
 
