@@ -52,9 +52,9 @@ public class Server {
                     String fileName = new String(a);
                     File file = new File(fileName);
                     if (!file.exists() || file.isDirectory()) {
-                        sendReplyCode(serveChannel, 'F');
+                        sendReplyCode(serveChannel, 'N');
                     }else{
-                        sendReplyCode(serveChannel, 'S');
+                        sendReplyCode(serveChannel, 'Y');
                         //read contents of file
                         BufferedReader br = new BufferedReader(new FileReader(file));
                         String line;
@@ -67,6 +67,26 @@ public class Server {
                     serveChannel.close();
                     break;
                 case 'U':
+                    //"Upload": client wants to Upload the file
+                    byte[] b = new byte[buffer.remaining()];
+                    // copy the rest of the client message (i.e., the file name)
+                    // to the byte array
+                    buffer.get(b);
+                    fileName = new String(b);
+                    file = new File(fileName);
+                    if (!file.exists() || file.isDirectory()) {
+                        sendReplyCode(serveChannel, 'N');
+                    }else{
+                        sendReplyCode(serveChannel, 'Y');
+                        //read contents of file
+                        BufferedReader br = new BufferedReader(new FileReader(file));
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            //write contents of file to client
+                            line = line+"\n";
+                            serveChannel.write(ByteBuffer.wrap(line.getBytes()));
+                        }
+                    }
                     break;
             }
 
