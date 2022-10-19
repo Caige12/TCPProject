@@ -29,10 +29,10 @@ public class Client {
             command = keyboard.nextLine().toUpperCase().charAt(0);
 
             switch (command) {
-                case 'G':
+                case 'D':
                     System.out.println("Enter the name of the file to download: ");
                     String fileName = keyboard.nextLine();
-                    ByteBuffer buffer = ByteBuffer.wrap(("G" + fileName).getBytes());
+                    ByteBuffer buffer = ByteBuffer.wrap(("D" + fileName).getBytes());
                     SocketChannel channel = SocketChannel.open();
                     channel.connect(new InetSocketAddress(serverIP, serverPort));
                     channel.write(buffer);
