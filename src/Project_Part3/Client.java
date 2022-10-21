@@ -19,9 +19,9 @@ public class Client {
         String serverIP = args[0];
 
         char command;
-
         do{
             Scanner keyboard = new Scanner(System.in);
+            String fileName;
             System.out.println("Enter a command (D, U, L, R, U, or Q):");
             //Commands are NOT case-sensitive.
             command = keyboard.nextLine().toUpperCase().charAt(0);
@@ -29,7 +29,7 @@ public class Client {
             switch (command) {
                 case 'D':
                     System.out.println("Enter the name of the file to download: ");
-                    String fileName = keyboard.nextLine();
+                    fileName = keyboard.nextLine();
                     ByteBuffer buffer = ByteBuffer.wrap(("D" + fileName).getBytes());
                     SocketChannel channel = SocketChannel.open();
                     channel.connect(new InetSocketAddress(serverIP, serverPort));
@@ -65,9 +65,13 @@ public class Client {
                     channel.close();
                     break;
                 case 'U':
-                    File file = new File("foobar");
+                    System.out.println("Which file would you like to upload?");
+                    fileName = keyboard.nextLine();
+                    File file = new File(fileName);
 
                     channel = SocketChannel.open();
+
+
 
                     if (!file.exists() || file.isDirectory()) {
                         System.out.println("That file cannot be uploaded");
