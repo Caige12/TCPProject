@@ -22,6 +22,8 @@ public class Client {
         do{
             Scanner keyboard = new Scanner(System.in);
             String fileName;
+            SocketChannel channel;
+            ByteBuffer buffer;
             System.out.println("Enter a command (D, U, L, R, U, or Q):");
             //Commands are NOT case-sensitive.
             command = keyboard.nextLine().toUpperCase().charAt(0);
@@ -30,8 +32,8 @@ public class Client {
                 case 'D':
                     System.out.println("Enter the name of the file to download: ");
                     fileName = keyboard.nextLine();
-                    ByteBuffer buffer = ByteBuffer.wrap(("D" + fileName).getBytes());
-                    SocketChannel channel = SocketChannel.open();
+                    buffer = ByteBuffer.wrap(("D" + fileName).getBytes());
+                    channel = SocketChannel.open();
                     channel.connect(new InetSocketAddress(serverIP, serverPort));
                     channel.write(buffer);
                     //It's critical to shut down output on client side
@@ -69,14 +71,15 @@ public class Client {
                     fileName = keyboard.nextLine();
                     File file = new File(fileName);
 
-                    channel = SocketChannel.open();
-
-
-
                     if (!file.exists() || file.isDirectory()) {
                         System.out.println("That file cannot be uploaded");
                         break;
                     } else {
+                        buffer = ByteBuffer.wrap(("U" + fileName).getBytes());
+                        channel = SocketChannel.open();
+                        channel.connect(new InetSocketAddress(serverIP, serverPort));
+                        channel.write(buffer);
+
                         BufferedReader br = new BufferedReader(new FileReader(file));
                         String line;
                         while ((line = br.readLine()) != null) {
