@@ -1,6 +1,5 @@
 package Project_Part3;
 
-import java.awt.*;
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -66,22 +65,21 @@ public class Client {
                     channel.close();
                     break;
                 case 'U':
-                    File file = new File("C://Program Files//");
-                    Desktop.getDesktop().open(file);
+                    File file = new File("foobar");
 
                     channel = SocketChannel.open();
 
                     if (!file.exists() || file.isDirectory()) {
                         System.out.println("That file cannot be uploaded");
                         break;
-                    }
-
-                    BufferedReader br = new BufferedReader(new FileReader(file));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        //write contents of file to client
-                        line = line+"\n";
-                        channel.write(ByteBuffer.wrap(line.getBytes()));
+                    } else {
+                        BufferedReader br = new BufferedReader(new FileReader(file));
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            //write contents of file to server
+                            line = line+"\n";
+                            channel.write(ByteBuffer.wrap(line.getBytes()));
+                        }
                     }
             }
         }while(command != 'Q');
