@@ -79,6 +79,7 @@ public class Client {
                         channel = SocketChannel.open();
                         channel.connect(new InetSocketAddress(serverIP, serverPort));
                         channel.write(buffer);
+                        channel.close();
 
                         BufferedReader br = new BufferedReader(new FileReader(file));
                         String line;
@@ -101,11 +102,24 @@ public class Client {
                     while ((bytesRead = channel.read(incomingData)) != -1){
                         incomingData.flip();
                         byte[] byteArray = new byte[bytesRead];
-
-                        incomingData.get(byteArray);
-                        String message = new String(byteArray);
-                        System.out.println(message);
+                        System.out.println((incomingData.get(byteArray)));
                         incomingData.clear();
+                    }
+                    channel.close();
+                case 'R':
+                    System.out.println("Which file would you like to upload?");
+                    fileName = keyboard.nextLine();
+                    buffer = ByteBuffer.wrap(("U" + fileName).getBytes());
+
+                    channel = SocketChannel.open();
+                    channel.connect(new InetSocketAddress(serverIP, serverPort));
+                    channel.write(buffer);
+                    channel.shutdownOutput();
+
+                    if (getServerCode(channel) != 'S') {
+                        System.out.println("Server failed to serve the request.");
+                    } else {
+                        System.out.println("Server has removed the file successfully.");
                     }
                     channel.close();
             }
