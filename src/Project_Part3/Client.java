@@ -102,7 +102,10 @@ public class Client {
                     while ((bytesRead = channel.read(incomingData)) != -1){
                         incomingData.flip();
                         byte[] byteArray = new byte[bytesRead];
-                        System.out.println((incomingData.get(byteArray)));
+
+                        incomingData.get(byteArray);
+                        String message = new String(byteArray);
+                        System.out.println(message);
                         incomingData.clear();
                     }
                     channel.close();
