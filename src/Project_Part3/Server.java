@@ -1,9 +1,6 @@
 package Project_Part3;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
@@ -31,18 +28,18 @@ public class Server {
             //connection request from a client
             //accept() performs the three-way handshake
             //with the client before it returns
-            SocketChannel serveChannel =
-                    listenChannel.accept();
+            SocketChannel serveChannel = listenChannel.accept();
 
             ByteBuffer buffer = ByteBuffer.allocate(MAX_Client_MESSAGE_LENGTH);
             //ensures that we read the whole message
-            while(serveChannel.read((buffer)) >= 0);
+            serveChannel.read((buffer));
+            //while(serveChannel.read((buffer)) >= 0);
             buffer.flip();
             //get the first character from the client message
             char command = (char)buffer.get();
             System.out.println("Command from client: "+ command);
 
-            switch (command){
+            switch (command) {
                 case 'D':
                     //"Get": client wants to get the file
                     byte[] a = new byte[buffer.remaining()];
@@ -53,40 +50,51 @@ public class Server {
                     File file = new File(fileName);
                     if (!file.exists() || file.isDirectory()) {
                         sendReplyCode(serveChannel, 'N');
-                    }else{
+                    } else {
                         sendReplyCode(serveChannel, 'Y');
                         //read contents of file
                         BufferedReader br = new BufferedReader(new FileReader(file));
                         String line;
                         while ((line = br.readLine()) != null) {
                             //write contents of file to client
-                            line = line+"\n";
+                            line = line + "\n";
                             serveChannel.write(ByteBuffer.wrap(line.getBytes()));
                         }
                     }
                     serveChannel.close();
                     break;
                 case 'U':
-                    //"Upload": client wants to Upload the file
+                    //"Upload": client wants to Upload the fil
+                    // copy the rest of the client message (i.e., the file name)
+                    // to the byte array
                     byte[] b = new byte[buffer.remaining()];
                     // copy the rest of the client message (i.e., the file name)
                     // to the byte array
                     buffer.get(b);
-                    fileName = new String(b);
-                    file = new File(fileName);
+                    serveChannel.read(buffer.get(b));
+                    fileName = buffer.toString();
+                    File newFile = new File(fileName);
                     serveChannel.read(buffer);
-                    if (!file.exists() || file.isDirectory()) {
-                        sendReplyCode(serveChannel, 'N');
-                    }else{
-                        sendReplyCode(serveChannel, 'Y');
-                        //read contents of file
-                        BufferedReader br = new BufferedReader(new FileReader(file));
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            //write contents of file to client
-                            line = line+"\n";
-                            serveChannel.write(ByteBuffer.wrap(line.getBytes()));
-                        }
+
+                    //read contents of file
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(newFile));
+                    ByteBuffer data = ByteBuffer.allocate(1024);
+                    while (serveChannel.read(data) != -1) {
+                        //write contents of file to client
+                        // line = line + "\n";
+                        data.flip();
+                        data.clear();
+                    }
+                    bw.close();
+                    break;
+                case 'M':
+                    break;
+                case 'L':
+                    File f = new File("src\\Resources");
+                    System.out.println(f.getAbsolutePath());
+                    File[] fList = f.listFiles();
+                    for(int i = 0; i < fList.length; i++){
+                        serveChannel.write(ByteBuffer.wrap((fList[i].getName()).getBytes()));
                     }
                     break;
             }
