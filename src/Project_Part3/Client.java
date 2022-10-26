@@ -88,6 +88,23 @@ public class Client {
                             channel.write(ByteBuffer.wrap(line.getBytes()));
                         }
                     }
+                case 'L':
+                    buffer = ByteBuffer.wrap(("L").getBytes());
+                    channel = SocketChannel.open();
+                    channel.connect(new InetSocketAddress(serverIP, serverPort));
+                    channel.write(buffer);
+                    channel.shutdownOutput();
+
+                    ByteBuffer incomingData = ByteBuffer.allocate(1024);
+                    int bytesRead;
+
+                    while ((bytesRead = channel.read(incomingData)) != -1){
+                        incomingData.flip();
+                        byte[] byteArray = new byte[bytesRead];
+                        System.out.println(incomingData.get(byteArray));
+                        incomingData.clear();
+                    }
+                    channel.close();
             }
         }while(command != 'Q');
 
