@@ -22,9 +22,10 @@ public class Client {
         do{
             Scanner keyboard = new Scanner(System.in);
             String fileName;
+            String newFileName;
             SocketChannel channel;
             ByteBuffer buffer;
-            System.out.println("Enter a command (D, U, L, R, U, or Q):");
+            System.out.println("Enter a command (D, U, L, R, M, or Q):");
             //Commands are NOT case-sensitive.
             command = keyboard.nextLine().toUpperCase().charAt(0);
 
@@ -110,7 +111,7 @@ public class Client {
                     }
                     channel.close();
                 case 'R':
-                    System.out.println("Which file would you like to upload?");
+                    System.out.println("Which file would you like to remove?");
                     fileName = keyboard.nextLine();
                     buffer = ByteBuffer.wrap(("U" + fileName).getBytes());
 
@@ -123,6 +124,24 @@ public class Client {
                         System.out.println("Server failed to serve the request.");
                     } else {
                         System.out.println("Server has removed the file successfully.");
+                    }
+                    channel.close();
+                case 'M':
+                    System.out.println("Which file would you like to remove?");
+                    fileName = keyboard.nextLine();
+                    System.out.println("What would you like it to be renamed to?");
+                    newFileName = keyboard.nextLine();
+
+                    buffer = ByteBuffer.wrap(("M" + fileName + ":" + newFileName).getBytes());
+                    channel = SocketChannel.open();
+                    channel.connect(new InetSocketAddress(serverIP, serverPort));
+                    channel.write(buffer);
+                    channel.shutdownOutput();
+
+                    if (getServerCode(channel) != 'S') {
+                        System.out.println("Server failed to serve the request.");
+                    } else {
+                        System.out.println("Server has renamed the file successfully.");
                     }
                     channel.close();
             }
