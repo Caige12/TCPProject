@@ -127,7 +127,7 @@ public class Client {
                     }
                     channel.close();
                 case 'M':
-                    System.out.println("Which file would you like to remove?");
+                    System.out.println("Which file would you like to rename?");
                     fileName = keyboard.nextLine();
                     System.out.println("What would you like it to be renamed to?");
                     newFileName = keyboard.nextLine();
