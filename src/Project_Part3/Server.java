@@ -22,7 +22,7 @@ public class Server {
 
         listenChannel.bind(new InetSocketAddress(port));
 
-        while(true){
+        while (true) {
             //accept() is a blocking call
             //it will return only when it receives a new
             //connection request from a client
@@ -36,8 +36,8 @@ public class Server {
             //while(serveChannel.read((buffer)) >= 0);
             buffer.flip();
             //get the first character from the client message
-            char command = (char)buffer.get();
-            System.out.println("Command from client: "+ command);
+            char command = (char) buffer.get();
+            System.out.println("Command from client: " + command);
 
             switch (command) {
                 case 'D':
@@ -87,24 +87,46 @@ public class Server {
                     }
                     bw.close();
                     break;
-                case 'M':
+                case 'R':
+                    byte[] c = new byte[buffer.remaining()];
+                    buffer.get(c);
+                    fileName = new String(c);
+                    file = new File("src\\Resources\\"+ fileName);
+                    if (!file.exists() || file.isDirectory()) {
+                        sendReplyCode(serveChannel, 'F');
+                    } else {
+                        sendReplyCode(serveChannel, 'S');
+                        file.delete();
+                    }
                     break;
                 case 'L':
                     File f = new File("src\\Resources");
                     System.out.println(f.getAbsolutePath());
                     File[] fList = f.listFiles();
-                    for(int i = 0; i < fList.length; i++){
+                    for (int i = 0; i < fList.length; i++) {
                         serveChannel.write(ByteBuffer.wrap((fList[i].getName()).getBytes()));
                     }
                     break;
+                case 'M':
+                    byte[] byte2Buffer = new byte[buffer.remaining()];
+                    buffer.get(byte2Buffer);
+                    String fileNames = new String(byte2Buffer);
+                    String[] oldNewName = fileNames.split(":");
+                    file = new File("src\\Resources\\"+ oldNewName[0]);
+                    if (!file.exists() || file.isDirectory()) {
+                        sendReplyCode(serveChannel, 'F');
+                    } else {
+                        sendReplyCode(serveChannel, 'S');
+                        file.renameTo(new File("src\\Resources\\" + oldNewName[1]));
+                    }
+                    break;
             }
-
         }
     }
-    private static void sendReplyCode (SocketChannel channel, char code) throws IOException{
-        byte[] a = new byte[1];
-        a[0] = (byte)code;
-        ByteBuffer data = ByteBuffer.wrap(a);
-        channel.write(data);
-    }
+        private static void sendReplyCode (SocketChannel channel,char code) throws IOException {
+            byte[] a = new byte[1];
+            a[0] = (byte) code;
+            ByteBuffer data = ByteBuffer.wrap(a);
+            channel.write(data);
+        }
 }
