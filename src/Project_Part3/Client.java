@@ -110,10 +110,11 @@ public class Client {
                         incomingData.clear();
                     }
                     channel.close();
+                    break;
                 case 'R':
                     System.out.println("Which file would you like to remove?");
                     fileName = keyboard.nextLine();
-                    buffer = ByteBuffer.wrap(("U" + fileName).getBytes());
+                    buffer = ByteBuffer.wrap(("R" + fileName).getBytes());
 
                     channel = SocketChannel.open();
                     channel.connect(new InetSocketAddress(serverIP, serverPort));
@@ -126,6 +127,7 @@ public class Client {
                         System.out.println("Server has removed the file successfully.");
                     }
                     channel.close();
+                    break;
                 case 'M':
                     System.out.println("Which file would you like to rename?");
                     fileName = keyboard.nextLine();
@@ -144,6 +146,7 @@ public class Client {
                         System.out.println("Server has renamed the file successfully.");
                     }
                     channel.close();
+                    break;
             }
         }while(command != 'Q');
 

@@ -106,6 +106,7 @@ public class Server {
                     for (int i = 0; i < fList.length; i++) {
                         serveChannel.write(ByteBuffer.wrap((fList[i].getName()).getBytes()));
                     }
+                    serveChannel.close();
                     break;
                 case 'M':
                     byte[] byte2Buffer = new byte[buffer.remaining()];
